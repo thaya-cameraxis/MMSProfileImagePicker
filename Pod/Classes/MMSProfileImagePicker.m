@@ -298,7 +298,9 @@ const CGFloat kOverlayInset = 10;
      */
     
     // Compute crop rectangle.
-    cropRect = [self centerSquareRectInRect:screenRect.size withInsets:UIEdgeInsetsMake(kOverlayInset, kOverlayInset, kOverlayInset, kOverlayInset)];
+//    cropRect = [self centerSquareRectInRect:screenRect.size withInsets:UIEdgeInsetsMake(kOverlayInset, kOverlayInset, kOverlayInset, kOverlayInset)];
+   
+    cropRect = [self createCropingAreaWithRectSize:screenRect.size withInsets:UIEdgeInsetsMake(52, 25, 25, 77)];
     
     overlayView = [[UIScrollView alloc] initWithFrame:screenRect];
     
@@ -599,11 +601,71 @@ const CGFloat kOverlayInset = 10;
     }
 
     rect = CGRectMake(x, y, length-inset.right-inset.left, length-inset.bottom-inset.top);
-
     
     return rect;
     
 }
+
+-(CGRect)createCropingAreaWithRectSize:(CGSize)layerSize withInsets:(UIEdgeInsets)inset{
+    
+    CGRect rect = CGRectZero;
+    
+    CGFloat x = 0;
+    CGFloat y = 0;
+    
+    rect = CGRectMake(x, y, layerSize.width-inset.right-inset.left, layerSize.height-inset.bottom-inset.top);
+    
+    if (!(CGSizeEqualToSize(rect.size, self.overlayCropSize))) {
+        
+        if (self.overlayCropSize.width > self.overlayCropSize.height) {
+            
+           CGFloat newHeight = (self.overlayCropSize.height/self.overlayCropSize.width) * rect.size.width;
+            
+            if (newHeight > rect.size.height) {
+                
+                rect.size.width = (self.overlayCropSize.height/self.overlayCropSize.width) * rect.size.height;
+
+            }else{
+                rect.size.height = newHeight;
+            }
+
+            
+        }else{
+            
+            CGFloat newWidth = (self.overlayCropSize.width/self.overlayCropSize.height) * rect.size.height;
+            
+            if (newWidth > rect.size.width) {
+                
+                rect.size.height = (self.overlayCropSize.height/self.overlayCropSize.width) * rect.size.width;
+                
+            }else{
+                rect.size.width = newWidth;
+            }
+            
+        }
+        
+    }
+    
+    if (self.isACircleOverlay) {
+        
+        if (rect.size.width > rect.size.height) {
+            rect.size.width = rect.size.height;
+        }else{
+            rect.size.height = rect.size.width;
+        }
+    }
+    
+    
+    x = (layerSize.width/2 - rect.size.width/2);
+    y = (layerSize.height/2 - rect.size.height/2);
+    
+    rect.origin.x = x;
+    rect.origin.y = y;
+    
+    return rect;
+    
+}
+
 
 /** Create Overlay
  *  the overlay is the transparent view with the clear center to show how the image will appear when cropped. inBounds is the inside transparent crop region.  outBounds is the region that falls outside the inbound region and displays what's beneath it with dark transparency.
@@ -618,15 +680,16 @@ const CGFloat kOverlayInset = 10;
     
     // create the circle so that it's diameter is the screen width and its center is at the intersection of the horizontal and vertical centers
     
-    UIBezierPath *circPath;
-    
-    circPath = [UIBezierPath bezierPathWithOvalInRect:inBounds];
-
     // Create a rectangular path to enclose the circular path within the bounds of the passed in layer size.
     UIBezierPath *rectPath = [UIBezierPath bezierPathWithRoundedRect:outBounds cornerRadius:0];
     
-    
-    [rectPath appendPath:circPath];
+    if (self.isACircleOverlay) {
+        UIBezierPath *circPath = [UIBezierPath bezierPathWithOvalInRect:inBounds];
+        [rectPath appendPath:circPath];
+    }else{
+        UIBezierPath *innerRectPath = [UIBezierPath bezierPathWithRect:inBounds];
+        [rectPath appendPath:innerRectPath];
+    }
     
     CAShapeLayer *rectLayer = [CAShapeLayer layer];
     
