@@ -765,8 +765,12 @@ const CGFloat kOverlayInset = 10;
                            UIImagePickerControllerMediaType: (__bridge NSString*)kUTTypeImage,
                            UIImagePickerControllerCropRect: [NSValue valueWithCGRect:imageCropRect]};
     
-    [self.delegate mmsImagePickerController:self didFinishPickingMediaWithInfo:info];
+    [self sendDidFinishPickingMediaWithInfo:info];
     
+}
+
+-(void)sendDidFinishPickingMediaWithInfo:(NSDictionary*)info{
+    [self.delegate mmsImagePickerController:self didFinishPickingMediaWithInfo:info];
 }
 
 /** cancel
@@ -874,13 +878,21 @@ const CGFloat kOverlayInset = 10;
     
     isPresentingCamera = YES;
     
-    camera = [[MMSCameraViewController alloc] initWithNibName:nil bundle:nil];
+//    camera = [[MMSCameraViewController alloc] initWithNibName:nil bundle:nil];
+//
+//    camera.delegate = self;
     
-    camera.delegate = self;
+    imagePicker = [[UIImagePickerController alloc] init];
+    
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    }
+    
+    imagePicker.delegate = self;
     
     presentingVC = vc;
     
-    [presentingVC presentViewController:camera animated:NO completion:nil];
+    [presentingVC presentViewController:imagePicker animated:NO completion:nil];
     
 }
 

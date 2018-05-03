@@ -8,12 +8,17 @@
 #import "AXProfileImagePicker.h"
 #import "UIImage+Cropping.h"
 #import "MMSProfileImagePicker+SubClass.h"
+#import <Photos/PHAsset.h>
+
 
 @interface AXProfileImagePicker ()
 
 @end
 
 @implementation AXProfileImagePicker
+{
+    PHAsset *_phAsset;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -41,8 +46,7 @@
     
     self.imageView.image = self.imageToEdit;
     
-    CGSize imageSize = [UIImage scaleSize:self.imageView.image.size toSize:cropRect.size];
-    CGSize furtherScaledImageSize = [self furtherScaleSize:imageSize toSize:cropRect.size];
+    CGSize furtherScaledImageSize = [self furtherScaleSize:self.imageView.image.size toSize:cropRect.size];
     
     CGRect imageRect = CGRectMake(0, 0, furtherScaledImageSize.width, furtherScaledImageSize.height);
     
@@ -152,7 +156,70 @@
     
 }
 
--(CGSize)furtherScaleSize:(CGSize)scaleSize toSize:(CGSize)toSize {
+-(CGSize)furtherScaleSize:(CGSize)fromSize toSize:(CGSize)toSize {
+    
+    CGSize scaleSize = CGSizeZero;
+    
+    // if the wideth is the shorter dimension
+    if (toSize.width < toSize.height) {
+        
+        if (fromSize.width >= toSize.width) {  // give priority to width if it is larger than the destination width
+            
+            scaleSize.width = ceilf(toSize.width);
+            
+            scaleSize.height = ceilf(scaleSize.width * fromSize.height / fromSize.width);
+            
+        } else if (fromSize.height >= toSize.height) {  // then give priority to height if it is larger than destination height
+            
+            scaleSize.height = ceilf(toSize.height);
+            
+            scaleSize.width = ceilf(scaleSize.height * fromSize.width / fromSize.height);
+            
+        } else {  // otherwise the source size is smaller in all directions.  Scale on width
+            
+            scaleSize.width = ceilf(toSize.width);
+            
+            scaleSize.height = ceilf(scaleSize.width * fromSize.height / fromSize.width);
+            
+            if (scaleSize.height > toSize.height) { // but if the new height is larger than the destination then scale height
+                
+                scaleSize.height = ceilf(toSize.height);
+                
+                scaleSize.width = ceilf(scaleSize.height * fromSize.width / fromSize.height);
+            }
+            
+        }
+    } else {  // else height is the shorter dimension
+        
+        if (fromSize.height >= toSize.height) {  // then give priority to height if it is larger than destination height
+            
+            scaleSize.height = ceilf(toSize.height);
+            
+            scaleSize.width = ceilf(scaleSize.height * fromSize.width / fromSize.height);
+            
+        } else if (fromSize.width >= toSize.width) {  // give priority to width if it is larger than the destination width
+            
+            scaleSize.width = ceilf(toSize.width);
+            
+            scaleSize.height = ceilf(scaleSize.width * fromSize.height / fromSize.width);
+            
+            
+        } else {  // otherwise the source size is smaller in all directions.  Scale on width
+            
+            scaleSize.width = ceilf(toSize.width);
+            
+            scaleSize.height = ceilf(scaleSize.width * fromSize.height / fromSize.width);
+            
+            if (scaleSize.height > toSize.height) { // but if the new height is larger than the destination then scale height
+                
+                scaleSize.height = ceilf(toSize.height);
+                
+                scaleSize.width = ceilf(scaleSize.height * fromSize.width / fromSize.height);
+            }
+            
+        }
+        
+    }
     
     CGFloat h_w_ratio = (scaleSize.height/scaleSize.width);
     CGFloat w_h_ratio = (scaleSize.width/scaleSize.height);
@@ -175,6 +242,60 @@
 }
 
 
+-(void)sendDidFinishPickingMediaWithInfo:(NSDictionary*)info{
+    
+    NSMutableDictionary *infoMutableDictionary = [NSMutableDictionary dictionaryWithDictionary:info];
+    
+    if(_phAsset){
+        
+        if (@available(iOS 11.0, *)) {
+            [infoMutableDictionary setObject:_phAsset forKey:UIImagePickerControllerPHAsset];
+        } else {
+            // Fallback on earlier versions
+            [infoMutableDictionary setObject:_phAsset forKey:@"UIImagePickerControllerPHAsset"];
+        }
+        
+    }
+    
+    [super sendDidFinishPickingMediaWithInfo:[NSDictionary dictionaryWithDictionary:infoMutableDictionary]];
+    
+}
+
+
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
+    
+    
+    
+    if (@available(iOS 11.0, *)) {
+        
+        if([info valueForKey:UIImagePickerControllerPHAsset]){
+            _phAsset = [info objectForKey:UIImagePickerControllerPHAsset];
+        }else if([info valueForKey:UIImagePickerControllerReferenceURL]){
+            
+            [self updatePhAssetWithReferenceURL:info[UIImagePickerControllerReferenceURL]];
+            
+        }
+    } else {
+        // Fallback on earlier versions
+        
+        if([info valueForKey:UIImagePickerControllerReferenceURL]){
+            
+            [self updatePhAssetWithReferenceURL:info[UIImagePickerControllerReferenceURL]];
+            
+        }
+        
+    }
+    
+    [super imagePickerController:picker didFinishPickingMediaWithInfo:info];
+    
+}
+
+-(void)updatePhAssetWithReferenceURL:(NSURL*)referenceURL{
+    
+    PHFetchResult* assets = [PHAsset fetchAssetsWithALAssetURLs:@[referenceURL] options:nil];
+    _phAsset = assets.firstObject;
+
+}
 /*
 #pragma mark - Navigation
 
