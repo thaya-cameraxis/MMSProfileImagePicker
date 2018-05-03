@@ -55,9 +55,6 @@
  */
 @property (strong, nullable)UIColor* foregroundColor;
 
-@property (nonatomic) BOOL isACircleOverlay;
-
-@property (nonatomic) CGSize overlayCropSize;
 
 /**
  *  The delegate receives notifications when the user has selected an image or exits image selection.
@@ -88,5 +85,10 @@
  *  @param vc The view controller to present the camera from.
  */
 -(void)selectFromCamera:(UIViewController* _Nonnull)vc;
+
+
+-(UIEdgeInsets)insetsForImage:(CGSize)imageSize withFrame:(CGSize)frameSize inView:(CGSize)viewSize;
+
+-(CGPoint)centerRect:(CGRect)insideRect inside:(CGRect)outsideRect;
 
 @end
