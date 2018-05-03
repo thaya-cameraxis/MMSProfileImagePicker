@@ -601,9 +601,9 @@ const CGFloat kOverlayInset = 10;
         x = inset.left;
         
         y = (layerSize.height/2-layerSize.width/2)+inset.top;
-
+        
     }
-
+    
     rect = CGRectMake(x, y, length-inset.right-inset.left, length-inset.bottom-inset.top);
     
     
