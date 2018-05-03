@@ -18,6 +18,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    if (@available(iOS 11.0, *)) {
+        self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    } else {
+        // Fallback on earlier versions
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -41,19 +49,10 @@
     self.imageView.frame = imageRect;
     
     self.scrollView.contentSize = imageRect.size;
-    
-    [self.scrollView layoutIfNeeded];
     self.scrollView.contentOffset = [self centerRect:self.imageView.frame inside:self.scrollView.frame];
     
     UIEdgeInsets insets = [self insetsForImage:self.imageView.frame.size withFrame:cropRect.size inView:screenRect.size];
     self.scrollView.contentInset = insets;
-    
-    if (@available(iOS 11.0, *)) {
-        self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    } else {
-        // Fallback on earlier versions
-        self.automaticallyAdjustsScrollViewInsets = NO;
-    }
     
 }
 
