@@ -27,6 +27,8 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "UIImage+Cropping.h"
 #import "MMSProfileImagePicker.h"
+#import "MMSProfileImagePicker+SubClass.h"
+
 @import AVFoundation;
 @import CoreMedia;
 @import ImageIO;
@@ -136,6 +138,10 @@ const CGFloat kOverlayInset = 10;
 @synthesize backgroundColor=_backgroundColor;
 @synthesize foregroundColor=_foregroundColor;
 @synthesize overlayOpacity=_overlayOpacity;
+@synthesize scrollView;
+@synthesize imageView;
+@synthesize imageToEdit;
+
 //@synthesize image=_image;
 
 -(instancetype) init {
@@ -298,7 +304,7 @@ const CGFloat kOverlayInset = 10;
      */
     
     // Compute crop rectangle.
-    cropRect = [self centerSquareRectInRect:screenRect.size withInsets:UIEdgeInsetsMake(kOverlayInset, kOverlayInset, kOverlayInset, kOverlayInset)];
+    cropRect = [self centerSquareRectInRect:screenRect.size withInsets:self.cropRectEdgeInsets];
     
     overlayView = [[UIScrollView alloc] initWithFrame:screenRect];
     
@@ -759,8 +765,12 @@ const CGFloat kOverlayInset = 10;
                            UIImagePickerControllerMediaType: (__bridge NSString*)kUTTypeImage,
                            UIImagePickerControllerCropRect: [NSValue valueWithCGRect:imageCropRect]};
     
-    [self.delegate mmsImagePickerController:self didFinishPickingMediaWithInfo:info];
+    [self sendDidFinishPickingMediaWithInfo:info];
     
+}
+
+-(void)sendDidFinishPickingMediaWithInfo:(NSDictionary*)info{
+    [self.delegate mmsImagePickerController:self didFinishPickingMediaWithInfo:info];
 }
 
 /** cancel
@@ -868,13 +878,21 @@ const CGFloat kOverlayInset = 10;
     
     isPresentingCamera = YES;
     
-    camera = [[MMSCameraViewController alloc] initWithNibName:nil bundle:nil];
+//    camera = [[MMSCameraViewController alloc] initWithNibName:nil bundle:nil];
+//
+//    camera.delegate = self;
     
-    camera.delegate = self;
+    imagePicker = [[UIImagePickerController alloc] init];
+    
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    }
+    
+    imagePicker.delegate = self;
     
     presentingVC = vc;
     
-    [presentingVC presentViewController:camera animated:NO completion:nil];
+    [presentingVC presentViewController:imagePicker animated:NO completion:nil];
     
 }
 
@@ -915,5 +933,12 @@ const CGFloat kOverlayInset = 10;
  // Pass the selected object to the new view controller.
  }
  */
+
+#pragma mark - Getters
+
+-(UIEdgeInsets)cropRectEdgeInsets{
+    return UIEdgeInsetsMake(kOverlayInset, kOverlayInset, kOverlayInset, kOverlayInset);
+}
+
 
 @end
