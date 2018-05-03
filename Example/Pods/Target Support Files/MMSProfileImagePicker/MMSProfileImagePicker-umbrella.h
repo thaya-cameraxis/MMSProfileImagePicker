@@ -10,6 +10,8 @@
 #endif
 #endif
 
+#import "AXProfileImagePicker.h"
+#import "MMSProfileImagePicker+SubClass.h"
 #import "MMSProfileImagePicker.h"
 #import "MMSProfileImagePickerDelegate.h"
 #import "UIImage+Cropping.h"

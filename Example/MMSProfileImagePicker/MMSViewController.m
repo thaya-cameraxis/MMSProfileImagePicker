@@ -27,12 +27,14 @@
 #import "MMSViewController.h"
 
 #import "MMSProfileImagePicker.h"
+#import "AXProfileImagePicker.h"
+
 
 @interface MMSViewController () {
 
 @private
 
-MMSProfileImagePicker* profilePicker;
+AXProfileImagePicker* profilePicker;
 
 UIImage* cropImage;      // Croped image
 
@@ -84,8 +86,9 @@ UIImage* originalImage;  // Source of crop image.
 
 - (IBAction)moveAndScale{
     
-    profilePicker = [[MMSProfileImagePicker alloc] init];
-    
+    profilePicker = [[AXProfileImagePicker alloc] init];
+    profilePicker.isACircleOverlay = NO;
+    profilePicker.overlayCropSize = CGSizeMake(1242, 2208);
     profilePicker.delegate = self;
     
     [profilePicker presentEditScreen:self withImage:originalImage];
@@ -94,7 +97,9 @@ UIImage* originalImage;  // Source of crop image.
 - (IBAction)pickFromAlbum {
     
     
-    profilePicker = [[MMSProfileImagePicker alloc] init];
+    profilePicker = [[AXProfileImagePicker alloc] init];
+    profilePicker.isACircleOverlay = YES;
+    profilePicker.overlayCropSize = CGSizeMake(1242, 2208);
     
     profilePicker.delegate = self;
     
@@ -105,8 +110,8 @@ UIImage* originalImage;  // Source of crop image.
 
 - (IBAction)pickFromCamera {
     
-    profilePicker = [[MMSProfileImagePicker alloc] init];
-    
+    profilePicker = [[AXProfileImagePicker alloc] init];
+
     profilePicker.delegate = self;
         
     [profilePicker selectFromCamera:self];
@@ -138,6 +143,13 @@ UIImage* originalImage;  // Source of crop image.
         
     }]];
     
+    //added to handle iPad
+    [actionSheet setModalPresentationStyle:UIModalPresentationPopover];
+    
+    UIPopoverPresentationController *popPresenter = [actionSheet
+                                                     popoverPresentationController];
+    popPresenter.sourceView = self.btnAdd;
+    popPresenter.sourceRect = self.btnAdd.bounds;
     [self presentViewController:actionSheet animated:YES completion:nil];
     
 }
@@ -179,8 +191,14 @@ UIImage* originalImage;  // Source of crop image.
         
     }]];
     
-    [self presentViewController:actionSheet animated:YES completion:nil];
+     //added to handle iPad
+    [actionSheet setModalPresentationStyle:UIModalPresentationPopover];
     
+    UIPopoverPresentationController *popPresenter = [actionSheet
+                                                     popoverPresentationController];
+    popPresenter.sourceView = self.btnEdit;
+    popPresenter.sourceRect = self.btnEdit.bounds;
+    [self presentViewController:actionSheet animated:YES completion:nil];
     
 }
 
