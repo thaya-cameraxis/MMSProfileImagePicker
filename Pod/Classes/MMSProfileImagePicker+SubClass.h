@@ -23,4 +23,6 @@
 
 -(CGPoint)centerRect:(CGRect)insideRect inside:(CGRect)outsideRect;
 
+-(void)sendDidFinishPickingMediaWithInfo:(NSDictionary*)info;
+
 @end
