@@ -607,7 +607,6 @@ const CGFloat kOverlayInset = 10;
     rect = CGRectMake(x, y, length-inset.right-inset.left, length-inset.bottom-inset.top);
     
     
-    
     return rect;
     
 }
