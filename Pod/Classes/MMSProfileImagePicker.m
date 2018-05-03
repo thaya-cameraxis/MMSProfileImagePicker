@@ -611,7 +611,6 @@ const CGFloat kOverlayInset = 10;
     
 }
 
-
 /** Create Overlay
  *  the overlay is the transparent view with the clear center to show how the image will appear when cropped. inBounds is the inside transparent crop region.  outBounds is the region that falls outside the inbound region and displays what's beneath it with dark transparency.
  *
