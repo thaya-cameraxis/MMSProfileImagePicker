@@ -19,4 +19,8 @@
 @property (nonatomic, readonly) UIEdgeInsets cropRectEdgeInsets;
 
 
+-(UIEdgeInsets)insetsForImage:(CGSize)imageSize withFrame:(CGSize)frameSize inView:(CGSize)viewSize;
+
+-(CGPoint)centerRect:(CGRect)insideRect inside:(CGRect)outsideRect;
+
 @end

@@ -138,9 +138,9 @@ const CGFloat kOverlayInset = 10;
 @synthesize backgroundColor=_backgroundColor;
 @synthesize foregroundColor=_foregroundColor;
 @synthesize overlayOpacity=_overlayOpacity;
-@synthesize scrollView = scrollView;
-@synthesize imageView = imageView;
-@synthesize imageToEdit = imageToEdit;
+@synthesize scrollView;
+@synthesize imageView;
+@synthesize imageToEdit;
 
 //@synthesize image=_image;
 
@@ -606,6 +606,7 @@ const CGFloat kOverlayInset = 10;
 
     rect = CGRectMake(x, y, length-inset.right-inset.left, length-inset.bottom-inset.top);
     
+    
     return rect;
     
 }
@@ -624,7 +625,6 @@ const CGFloat kOverlayInset = 10;
     
     // create the circle so that it's diameter is the screen width and its center is at the intersection of the horizontal and vertical centers
     
-    // Create a rectangular path to enclose the circular path within the bounds of the passed in layer size.
     UIBezierPath *circPath;
     
     circPath = [UIBezierPath bezierPathWithOvalInRect:inBounds];
