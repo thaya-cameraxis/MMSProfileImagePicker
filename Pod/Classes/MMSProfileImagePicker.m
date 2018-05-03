@@ -605,8 +605,8 @@ const CGFloat kOverlayInset = 10;
     }
 
     rect = CGRectMake(x, y, length-inset.right-inset.left, length-inset.bottom-inset.top);
- 
-    
+
+
     return rect;
     
 }
@@ -627,7 +627,7 @@ const CGFloat kOverlayInset = 10;
     UIBezierPath *circPath;
     
     circPath = [UIBezierPath bezierPathWithOvalInRect:inBounds];
-    
+
     // Create a rectangular path to enclose the circular path within the bounds of the passed in layer size.
     UIBezierPath *rectPath = [UIBezierPath bezierPathWithRoundedRect:outBounds cornerRadius:0];
     
