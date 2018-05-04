@@ -40,6 +40,10 @@
 
 -(void)positionImageView {
     
+    if (self.scrollView.zoomScale != 1.0) {
+        self.scrollView.zoomScale = 1.0;
+    }
+    
     CGRect screenRect = [UIScreen mainScreen].bounds;  // get the device physical screen dimensions
     
     CGRect cropRect = [self centerSquareRectInRect:screenRect.size withInsets:self.cropRectEdgeInsets];
@@ -295,6 +299,24 @@
     PHFetchResult* assets = [PHAsset fetchAssetsWithALAssetURLs:@[referenceURL] options:nil];
     _phAsset = assets.firstObject;
 
+}
+
+- (NSString*)lString:(NSString*) key comment:(NSString*)comment {
+    
+    if ([key isEqualToString:@"Button.choose.photoFromCamera"]) {
+        return @"Use Photo";
+    }else if ([key isEqualToString:@"Button.choose.photoFromPicker"]) {
+        return @"Choose";
+    }else if ([key isEqualToString:@"Button.cancel.photoFromCamera"]) {
+        return @"Retake";
+    }else if ([key isEqualToString:@"Button.cancel.photoFromPicker"]) {
+        return @"Cancel";
+    }else if ([key isEqualToString:@"Edit.title"]) {
+        return @"Move and Scale";
+    }else{
+        return @"";
+    }
+    
 }
 /*
 #pragma mark - Navigation
